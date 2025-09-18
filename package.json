@@ -1,0 +1,66 @@
+{
+  "name": "metadata-viewer",
+  "displayName": "Metadata Viewer",
+  "description": "Parse, format, and view {.star, .pkl} files.",
+  "version": "0.0.1",
+  "publisher": "Robert Heeter",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "activationEvents": [
+    "onCommand:metadataViewer.viewStar",
+    "onCommand:metadataViewer.viewPkl"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "star",
+        "extensions": [".star"],
+        "aliases": ["STAR", "star"]
+      },
+      {
+        "id": "pkl",
+        "extensions": [".pkl"],
+        "aliases": ["PICKLE", "pickle"]
+      }
+    ],
+    "commands": [
+      {
+        "command": "metadataViewer.viewStar",
+        "title": "Metadata Viewer: View STAR File"
+      },
+      {
+        "command": "metadataViewer.viewPkl",
+        "title": "Metadata Viewer: View PKL File"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "metadataViewer.viewPkl",
+          "when": "resourceExtname == .pkl",
+          "group": "navigation"
+        },
+        {
+          "command": "metadataViewer.viewStar",
+          "when": "resourceExtname == .star",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "typescript": "^4.8.0",
+    "vscode": "^1.1.37"
+  },
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/robertheeter/metadata-viewer"
+}
+}
