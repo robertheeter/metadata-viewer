@@ -11,7 +11,7 @@ def parse_star(path: str):
     try:
         obj = starfile.read(path)
 
-        print("<<<TABLE_START>>>") # start of html output
+        print("<<<TABLE_START>>>") # start of HTML output
         
         if isinstance(obj, dict):
             print(f"<h1>{type(obj).__name__} [{len(obj)}]</h1>")
@@ -32,7 +32,7 @@ def parse_star(path: str):
             print(f"Unsupported .star data type: {type(obj).__name__}", file=sys.stderr)
             sys.exit(1)
         
-        print("<<<TABLE_END>>>") # end of html output
+        print("<<<TABLE_END>>>") # end of HTML output
     
     except Exception as e:
         print(e, file=sys.stderr)
