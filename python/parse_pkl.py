@@ -64,14 +64,24 @@ def _parse_pkl(obj, level=1, max_depth=3):
                 print(f"<h{level}>{type(obj).__name__} {str(list(obj.shape))}</h{level}>")
                 
                 n_slices = obj.shape[0]
-                max_slices = 10
-
-                for i in range(min(n_slices, max_slices)):
-                    df = pd.DataFrame(obj[i])
-                    display_dataframe(df, name=f"slice {i}", level=level + 1)
-
-                if n_slices > NDARRAY_DISPLAY_MAX_SLICES:
+                
+                if n_slices <= NDARRAY_DISPLAY_MAX_SLICES:
+                    for i in range(0, n_slices):
+                        df = pd.DataFrame(obj[i])
+                        display_dataframe(df, name=f"slice {i}", level=level + 1)
+                
+                else:
+                    n_slices_display = NDARRAY_DISPLAY_MAX_SLICES // 2
+                    
+                    for i in range(min(n_slices, n_slices_display)):
+                        df = pd.DataFrame(obj[i])
+                        display_dataframe(df, name=f"slice {i}", level=level + 1)
+                        
                     print(f"<h{level + 1}>...</h{level + 1}>")
+
+                    for i in range(-1 * n_slices_display, 0):
+                        df = pd.DataFrame(obj[i])
+                        display_dataframe(df, name=f"slice {n_slices + i}", level=level + 1)
             
             else:
                 print(f"<p>Failed to render {type(obj).__name__}: {e}</p>")
