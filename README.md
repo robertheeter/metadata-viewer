@@ -3,7 +3,7 @@ Visual Studio Code extension for cryo-electron microscopy `.star` and `.pkl` met
 
 ## Features
 Supports the following file formats and data structures:
-- **`.star`**: Displays tables of the first and last 50 rows for each array using the [`starfile`](https://github.com/teamtomo/starfile) package.
+- **`.star`**: Displays tables of the first and last 50 rows for each array in a `.star` file using the [`starfile`](https://github.com/teamtomo/starfile) package.
 - **`.pkl`**: Displays contents of 1D–3D NumPy arrays, 1D–2D Pandas DataFrames, lists, tuples, and scalar values (e.g., strings, floats).
 
 ## Installation
