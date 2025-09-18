@@ -53,7 +53,7 @@ def _parse_pkl(obj, level=1, max_depth=3):
     elif isinstance(obj, np.ndarray):
         try:
             if obj.ndim == 1:
-                df = pd.DataFrame(obj, columns=["Value"])
+                df = pd.DataFrame(obj)
                 display_dataframe(df, name=type(obj).__name__, level=level)
                 
             elif obj.ndim == 2:
