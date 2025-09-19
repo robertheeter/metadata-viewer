@@ -20,13 +20,14 @@ def parse_star(path: str):
                 try:
                     display_dataframe(df=df, name=name, level=2)
                 except Exception as e:
-                    print(f"<p>Failed to render {type(obj).__name__}: {e}</p>")
+                    print(f"<h2>{name}</h2>")
+                    print(f"<p><i>Failed to render: {e}</i></p>")
                     
         elif isinstance(obj, pd.DataFrame):
             try:
                 display_dataframe(df=obj, name='', level=1)
             except Exception as e:
-                print(f"<p>Failed to render {type(obj).__name__}: {e}</p>")
+                print(f"<p><i>Failed to render: {e}</i></p>")
 
         else:
             print(f"Unsupported .star data type: {type(obj).__name__}", file=sys.stderr)

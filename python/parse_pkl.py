@@ -6,7 +6,7 @@ import numpy as np
 
 from utils import display_dataframe
 
-NDARRAY_DISPLAY_MAX_SLICES = 10
+NDARRAY_DISPLAY_MAX_ELEMENTS = 10
 
 
 # parse .pkl file
@@ -17,12 +17,7 @@ def parse_pkl(file_path):
 
         print("<<<TABLE_START>>>") # start of HTML output
 
-        if isinstance(obj, (pd.DataFrame, np.ndarray, list, tuple)):
-            _parse_pkl(obj=obj, level=1, max_depth=3, file_path=file_path, ctf=False, pose=False)
-        
-        else:
-            print(f"Unsupported .pkl data type: {type(obj).__name__}", file=sys.stderr)
-            sys.exit(1)
+        _parse_pkl(obj=obj, level=1, max_depth=3, file_path=file_path, ctf=False, pose=False)
 
         print("<<<TABLE_END>>>") # end of HTML output
 
@@ -31,29 +26,35 @@ def parse_pkl(file_path):
         sys.exit(1)
 
 
-def _parse_pkl(obj, level=1, max_depth=3, file_path='', ctf=False, pose=False):
+def _parse_pkl(obj, level=1, max_depth=3, file_path='', ctf=False, pose=False, index=None):
     if level > max_depth:
         print(f"<p>...</p>")
         return
 
+    if index is not None:
+        name = f"{index}. {type(obj).__name__}"
+    else:
+        name = type(obj).__name__
+    
     # string, int, float, bool
     if isinstance(obj, (str, int, float, bool)):
-        print(f"<h{level}>{type(obj).__name__}</h{level}>")
+        print(f"<h{level}>{name}</h{level}>")
         print(f"<p>{obj}</p>")
     
     # Pandas DataFrame
     elif isinstance(obj, pd.DataFrame):
         try:
-            display_dataframe(df=obj, name=type(obj).__name__, level=level)
-        
+            display_dataframe(df=obj, name=name, level=level)
+
         except Exception as e:
-            print(f"<p><i>Failed to render {type(obj).__name__}: {e}</i></p>")
+            print(f"<h{level}>{name}</h{level}>")
+            print(f"<p><i>Failed to render: {e}</i></p>")
 
     # NumPy ndarray
     elif isinstance(obj, np.ndarray):
         try:
             if obj.ndim == 1:
-                display_dataframe(df=pd.DataFrame(obj), name=type(obj).__name__, level=level)
+                display_dataframe(df=pd.DataFrame(obj), name=name, level=level)
                 
             elif obj.ndim == 2:
                 df = pd.DataFrame(obj)
@@ -86,10 +87,10 @@ def _parse_pkl(obj, level=1, max_depth=3, file_path='', ctf=False, pose=False):
                     level == 2 and
                     df.shape[1] == 2
                 ):
-                    display_dataframe(df=df, name='translation', level=level)
+                    display_dataframe(df=df, name='2. translation', level=level)
                 
                 else:
-                    display_dataframe(df=df, name=type(obj).__name__, level=level)
+                    display_dataframe(df=df, name=name, level=level)
 
             elif obj.ndim == 3:
                 # reformat name if structure matches pose (rotation) data format
@@ -99,33 +100,35 @@ def _parse_pkl(obj, level=1, max_depth=3, file_path='', ctf=False, pose=False):
                     obj.shape[1] == 3 and
                     obj.shape[2] == 3
                 ):
-                    print(f"<h2>rotation {str(list(obj.shape))}</h2>")
+                    print(f"<h2>1. rotation {str(list(obj.shape))}</h2>")
                 
                 else:
-                    print(f"<h{level}>{type(obj).__name__} {str(list(obj.shape))}</h{level}>")
+                    print(f"<h{level}>{name} {str(list(obj.shape))}</h{level}>")
                 
-                n_slices = obj.shape[0]
+                n_elements = obj.shape[0]
                 
-                if n_slices <= NDARRAY_DISPLAY_MAX_SLICES:
-                    for i in range(0, n_slices):
-                        display_dataframe(df=pd.DataFrame(obj[i]), name=f"{i}", level=level + 1)
+                if n_elements <= NDARRAY_DISPLAY_MAX_ELEMENTS:
+                    for i in range(0, n_elements):
+                        display_dataframe(df=pd.DataFrame(obj[i]), name=f"{i}.", level=None)
                 
                 else:
-                    n_slices_display = NDARRAY_DISPLAY_MAX_SLICES // 2
-                    
-                    for i in range(min(n_slices, n_slices_display)):
-                        display_dataframe(df=pd.DataFrame(obj[i]), name=f"{i}", level=level + 1)
+                    n_elements_display = NDARRAY_DISPLAY_MAX_ELEMENTS // 2
+
+                    for i in range(min(n_elements, n_elements_display)):
+                        display_dataframe(df=pd.DataFrame(obj[i]), name=f"{i}.", level=None)
                         
                     print(f"<h{level + 1}>...</h{level + 1}>")
 
-                    for i in range(-1 * n_slices_display, 0):
-                        display_dataframe(df=pd.DataFrame(obj[i]), name=f"{n_slices + i}", level=level + 1)
-            
+                    for i in range(-1 * n_elements_display, 0):
+                        display_dataframe(df=pd.DataFrame(obj[i]), name=f"{n_elements + i}.", level=None)
+                    
             else:
-                print(f"<p><i>Failed to render {type(obj).__name__}: {e}</i></p>")
+                print(f"<h{level}>{name}</h{level}>")
+                print(f"<p><i>Failed to render: {e}</i></p>")
         
         except Exception as e:
-            print(f"<p><i>Failed to render {type(obj).__name__}: {e}</i></p>")
+            print(f"<h{level}>{name}</h{level}>")
+            print(f"<p><i>Failed to render: {e}</i></p>")
 
     # list, tuple
     elif isinstance(obj, (list, tuple)):
@@ -156,14 +159,23 @@ def _parse_pkl(obj, level=1, max_depth=3, file_path='', ctf=False, pose=False):
             _parse_pkl(obj=translation, level=2, max_depth=max_depth, pose=True)
         
         else:
-            print(f"<h{level}>{type(obj).__name__} [{len(obj)}]</h{level}>")
+            print(f"<h{level}>{name} [{len(obj)}]</h{level}>")
         
-            for o in obj:
-                _parse_pkl(obj=o, level=level + 1, max_depth=max_depth)
+            n_elements = len(obj)
+            if n_elements <= NDARRAY_DISPLAY_MAX_ELEMENTS:
+                for i in range(0, n_elements):
+                    _parse_pkl(obj=obj[i], level=level + 1, max_depth=max_depth, index=i)
+            
+            else:
+                n_elements_display = NDARRAY_DISPLAY_MAX_ELEMENTS // 2
 
-    else:
-        print(f"Unsupported .pkl data type: {type(obj).__name__}", file=sys.stderr)
-        sys.exit(1)
+                for i in range(min(n_elements, n_elements_display)):
+                    _parse_pkl(obj=obj[i], level=level + 1, max_depth=max_depth, index=i)
+                    
+                print(f"<h{level + 1}>...</h{level + 1}>")
+
+                for i in range(-1 * n_elements_display, 0):
+                    _parse_pkl(obj=obj[i], level=level + 1, max_depth=max_depth, index=n_elements + i)
 
 
 def main():
