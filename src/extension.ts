@@ -2,9 +2,48 @@ import * as vscode from "vscode";
 import * as cp from "child_process";
 import * as path from "path";
 
-export function activate(context: vscode.ExtensionContext) {
-  console.log("Metadata Viewer extension activated.");
 
+type PythonPath = {
+  pythonPath?: string;
+  errorMessage?: string;
+};
+
+async function getPythonPath(): Promise<PythonPath> {
+  const pythonExtension = vscode.extensions.getExtension("ms-python.python");
+  if (!pythonExtension) {
+    return {
+      pythonPath: undefined,
+      errorMessage: "No Python interpreter path detected; Python extension (ms-python.python) is not installed"
+    };
+  }
+
+  await pythonExtension.activate(); // activate VS Code Python extension
+
+  const api = pythonExtension.exports;
+  if (!api) {
+    return {
+      pythonPath: undefined,
+      errorMessage: "No Python interpreter path detected; Python extension (ms-python.python) API not available"
+    };
+  }
+
+  const interpreter = api.settings?.getExecutionDetails?.(undefined); // get details for the currently selected interpreter
+
+  if (interpreter && interpreter.execCommand && interpreter.execCommand.length > 0) {
+    return {
+      pythonPath: interpreter.execCommand[0],
+      errorMessage: undefined
+    };
+  }
+
+  return {
+    pythonPath: undefined,
+    errorMessage: "No Python interpreter path detected"
+  };
+}
+
+
+export function activate(context: vscode.ExtensionContext) {
   // supported file types and their associated commands
   const supportedCommands = [
     { ext: ".star", name: "View STAR File", id: "metadataViewer.viewStar", script: "parse_star.py" },
@@ -65,8 +104,17 @@ export function activate(context: vscode.ExtensionContext) {
         `${commandName}: Loading`
       );
 
+      const result = await getPythonPath();
+      if (!result.pythonPath) {
+        vscode.window.setStatusBarMessage(`${commandName}: Error`, 2000);
+        vscode.window.showErrorMessage(`${commandName}: Error parsing "${fileName}" • ${result.errorMessage || "Unknown error"} • Interpreter: ${result.pythonPath}`);
+        return;
+      }
+
+      const pythonPath = result.pythonPath;
       const pythonScript = path.join(context.extensionPath, "python", commandScript);
-      const process = cp.spawn("python", [pythonScript, filePath]);
+
+      const process = cp.spawn(pythonPath, [pythonScript, filePath]);
 
       let stdout = "";
       let stderr = "";
@@ -83,7 +131,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (code !== 0 || stderr) {
           statusMessageDisposable.dispose();
           vscode.window.setStatusBarMessage(`${commandName}: Error`, 2000);
-          vscode.window.showErrorMessage(`${commandName}: Error parsing ${fileName}: ${stderr || "Unknown error"}`);
+          vscode.window.showErrorMessage(`${commandName}: Error parsing "${fileName}" • ${stderr || "Unknown error"}• Interpreter: "${pythonPath}"`);
           return;
         }
 
