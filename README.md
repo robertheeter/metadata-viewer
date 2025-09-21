@@ -4,14 +4,14 @@ Visual Studio Code extension for cryo-electron microscopy `.star` and `.pkl` met
 ## Features
 Supports the following file formats and data structures:
 - **`.star`**: Displays tables for each array in a `.star` file using the [`starfile`](https://github.com/teamtomo/starfile) package.
-- **`.pkl`**: Displays contents of 1D–3D NumPy arrays, 1D–2D Pandas DataFrames, lists, tuples, and scalar values (e.g., strings, floats). This extension also automatically formats the `ctf.pkl` and `pose.pkl` files that are used in data processing with the [`cryodrgn`](https://github.com/ml-struct-bio/cryodrgn) package.
+- **`.pkl`**: Displays contents of 1D–3D NumPy arrays, 1D–2D Pandas DataFrames, lists, tuples, and scalar values (e.g., strings, floats). This extension also automatically formats the CTF and pose `.pkl` files that are used in data processing with the [`cryodrgn`](https://github.com/ml-struct-bio/cryodrgn) package.
 
-Tabular data is truncated to the first and last 50 rows and/or columns. Lists are truncated to the first and last 5 elements. CryoDRGN CTF and pose `.pkl` files are assumed from their file format and file name.
+Tabular data is truncated to the first and last 50 rows and/or columns. Lists are truncated to the first and last 5 elements. CryoDRGN CTF and pose `.pkl` files are identified by their file format and file name.
 
 ## Installation
-1. Install the Metadata Viewer extension using the Command Palette (`Cmd + Shift + P` or `Ctrl + Shift + P`) > `Extensions: Install from VSIX` using the included `metadata-viewer-0.0.1.vsix` file.
-2. Ensure Python is installed on your machine; the extension uses the active Visual Studio Code Python interpreter to function. The Python interpreter can be selected via the Command Palette > `Python: Select Interpreter`.
-3. Install the required Python dependencies (`starfile`, `numpy`, `pandas`) in the selected interpreter (e.g., `pip install starfile numpy pandas`) if not already present.
+1. Install the Metadata Viewer extension using the Visual Studio Code Command Palette (`Cmd + Shift + P` or `Ctrl + Shift + P`) > `Extensions: Install from VSIX` with the included [`metadata-viewer-0.0.1.vsix`](https://github.com/robertheeter/metadata-viewer/blob/main/metadata-viewer-0.0.1.vsix) file.
+2. Ensure Python is installed on your machine. The extension uses the active Visual Studio Code Python interpreter to function. The Python interpreter can be selected via the Command Palette > `Python: Select Interpreter`.
+3. Install the required Python dependencies (`starfile`, `numpy`, `pandas`) in the selected interpreter (e.g., `pip install starfile numpy pandas`), if they are not already installed.
 
 ## Usage
 There are two options for viewing files with this extension:
