@@ -9,9 +9,9 @@ Supports the following file formats and data structures:
 Tabular data is truncated to the first and last 50 rows and/or columns. Lists are truncated to the first and last 5 elements. CryoDRGN CTF and pose `.pkl` files are assumed from their file format and file name.
 
 ## Installation
-1. Install the Metadata Viewer extension via `Extensions (Window)` > `Install from VSIX` using the included `metadata-viewer-0.0.1.vsix` file.
-2. Ensure Python is installed on your machine; the extension requires a Python interpreter to function.
-3. Install the required Python dependencies globally (i.e., outside of a virtual environemnt) with `pip install starfile numpy pandas`.
+1. Install the Metadata Viewer extension using the Command Palette (`Cmd + Shift + P` or `Ctrl + Shift + P`) > `Extensions: Install from VSIX` using the included `metadata-viewer-0.0.1.vsix` file.
+2. Ensure Python is installed on your machine; the extension uses the active Visual Studio Code Python interpreter to function. The Python interpreter can be selected via the Command Palette > `Python: Select Interpreter`.
+3. Install the required Python dependencies (`starfile`, `numpy`, `pandas`) in the selected interpreter (e.g., `pip install starfile numpy pandas`) if not already present.
 
 ## Usage
 There are two options for viewing files with this extension:
